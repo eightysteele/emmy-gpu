@@ -52,3 +52,8 @@ FROM install-bazelisk AS build-xla-tools
 ARG SRC_PATH_XLA=/opt/xla
 ADD build-xla-tools.sh /usr/local/bin
 RUN build-xla-tools.sh
+
+FROM build-xla-tools AS install-genjax
+ARG GCLOUD_ACCESS_TOKEN
+ADD install-genjax.sh /user/local/bin
+RUN install-genjax.sh

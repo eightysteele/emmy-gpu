@@ -35,3 +35,5 @@ cmake --build .
 
 ninja check-stablehlo-tests
 
+cp "$SRC_PATH_HLO/build/bin/stablehlo*" /usr/local/bin
+
