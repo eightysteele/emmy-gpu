@@ -10,4 +10,4 @@ auth_url=https://oauth2accesstoken:"$GCLOUD_ACCESS_TOKEN"@"$url"
 
 pip install genjax --extra-index-url "$auth_url"
 
-python genjax_example.py
+python genjax_demo.py

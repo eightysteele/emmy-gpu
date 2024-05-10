@@ -69,6 +69,6 @@ FROM install-gcloud AS install-genjax
 # Installs GenJAX: https://github.com/probcomp/genjax
 WORKDIR /
 ARG GCLOUD_ACCESS_TOKEN
-ADD genjax_example.py /
+ADD genjax_demo.py /
 ADD install-genjax.sh /usr/local/bin
 RUN install-genjax.sh
