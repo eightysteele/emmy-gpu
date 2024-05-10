@@ -52,19 +52,23 @@ ms = timeit.timeit(
     number=n
 ) / n * 1000
 print(f"CPU: Average runtime over {n} runs = {ms} (ms)")
+with jax.profiler.trace("./jax-trace", create_perfetto_trace=True):
+    cpu_jit()
 
 # GPU compile, execute, benchmark
 gpu_jit = jax.jit(run_inference(True, 'cpu'))
 gpu_jit().block_until_ready()
-if jax.devices('gpu'):
+try:
+    jax.devices('gpu')
     ms = timeit.timeit(
         'gpu_jit',
         globals=globals(),
         number=n
     ) / n * 1000
     print(f"GPU: Average runtime over {n} runs = {ms} (ms)")
+    with jax.profiler.trace("./jax-trace", create_perfetto_trace=True):
+        gpu_jit()
+except RuntimeError as e:
+    print(e)
 
 # Profile the trace, open it here: https://ui.perfetto.dev
-with jax.profiler.trace("./jax-trace", create_perfetto_trace=True):
-    cpu_jit()
-    gpu_jit()
