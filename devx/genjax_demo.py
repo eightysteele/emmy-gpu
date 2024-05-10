@@ -63,3 +63,8 @@ if jax.devices('gpu'):
         number=n
     ) / n * 1000
     print(f"GPU: Average runtime over {n} runs = {ms} (ms)")
+
+# Profile the trace, open it here: https://ui.perfetto.dev
+with jax.profiler.trace("./jax-trace", create_perfetto_trace=True):
+    cpu_jit()
+    gpu_jit()
