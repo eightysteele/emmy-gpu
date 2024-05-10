@@ -53,7 +53,20 @@ ARG SRC_PATH_XLA=/opt/xla
 ADD build-xla-tools.sh /usr/local/bin
 RUN build-xla-tools.sh
 
-FROM build-xla-tools AS install-genjax
+################################################################################
+FROM build-xla-tools AS install-gcloud
+################################################################################
+
+# Installs gcloud
 ARG GCLOUD_ACCESS_TOKEN
-ADD install-genjax.sh /user/local/bin
+ADD install-gcloud.sh /usr/local/bin
+RUN install-gcloud.sh
+
+################################################################################
+FROM install-gcloud AS install-genjax
+################################################################################
+
+# Installs GenJAX: https://github.com/probcomp/genjax
+ARG GCLOUD_ACCESS_TOKEN
+ADD install-genjax.sh /usr/local/bin
 RUN install-genjax.sh

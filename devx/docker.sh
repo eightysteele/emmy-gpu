@@ -47,24 +47,23 @@ install_gcloud() {
 
 check_gcloud() {
     echo "CLI: Checking for gcloud"
-   if ! command -v gcloud > /dev/null; then
-       install_gcloud
-   fi
-   account=$(gcloud config list account --format="value(core.account)")
-   if [ -z "$account" ]; then
-       gcloud auth login
-   else
-       echo "CLI: gcloud authenticated with $account"
-   fi
+    if ! command -v gcloud > /dev/null; then
+        install_gcloud
+    fi
+    account=$(gcloud config list account --format="value(core.account)")
+    if [ -z "$account" ]; then
+        gcloud auth login
+    else
+        echo "CLI: gcloud authenticated with $account"
+    fi
 }
 
 gcloud_auth_token() {
-    echo "CLI: Getting gcloud token"
-   if ! token=$(gcloud auth print-access-token); then
-      echo "couldn't get gcloud auth token"
-      exit 1
-   fi
-   echo "$token"
+    if ! token=$(gcloud auth print-access-token); then
+        echo "couldn't get gcloud auth token"
+        exit 1
+    fi
+    echo "$token"
 }
 
 docker_build() {
