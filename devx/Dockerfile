@@ -3,8 +3,9 @@ FROM ghcr.io/nvidia/jax:t5x-2024-05-09 as base
 ################################################################################
 
 # https://github.com/NVIDIA/JAX-Toolbox/pkgs/container/jax
+
 # See flags and environment variables:
-# https://github.com/NVIDIA/JAX-Toolbox?tab=readme-ov-file#environment-variables
+# https://github.com/NVIDIA/JAX-Toolbox/blob/main/README.md#environment-variables
 
 ################################################################################
 FROM base AS build-hlo
