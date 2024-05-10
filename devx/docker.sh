@@ -2,11 +2,15 @@
 
 set -e
 
-PROJECT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+EMMY_GPU_REPO=$(realpath "$(dirname "$SCRIPT_DIR")")
+TAG=emmy-gpu:dev
 
 docker_build() {
     echo "CLI: Docker build"
-    if ! docker build --tag javacpp:dev --file Dockerfile .; then
+    if ! docker build \
+         --tag "$TAG" \
+         --file Dockerfile .; then
         echo "docker build failed"
         exit 1
     fi
@@ -14,7 +18,14 @@ docker_build() {
 
 docker_run() {
     echo "CLI: Docker run"
-    if ! sudo docker run --privileged --gpus all -it javacpp:dev /bin/bash; then
+    if ! sudo docker run \
+         -v "$EMMY_GPU_REPO":/emmy-gpu \
+         --shm-size=2g \
+         --privileged \
+         --gpus all \
+         -it \
+         "$TAG" \
+         /bin/bash; then
         echo "docker run failed"
         exit 1
     fi
@@ -26,9 +37,9 @@ usage() {
 }
 
 entrypoint() {
-    cd "$PROJECT_ROOT"
-    if ! cd "$PROJECT_ROOT"; then
-        echo "failed to change into the project root directory $PROJECT_ROOT";
+    cd "$SCRIPT_DIR"
+    if ! cd "$SCRIPT_DIR"; then
+        echo "failed to change into the project root directory $SCRIPT_DIR";
         exit 1
     fi
 
