@@ -43,7 +43,7 @@ def run_inference(obs: bool, platform='cpu'):
 
 n = 1000
 
-# CPU compile, execute, benchmark
+# CPU compile, execute, benchmark, profile
 cpu_jit = jax.jit(run_inference(True, 'cpu'))
 cpu_jit().block_until_ready()
 ms = timeit.timeit(
@@ -55,7 +55,7 @@ print(f"CPU: Average runtime over {n} runs = {ms} (ms)")
 with jax.profiler.trace("./jax-trace", create_perfetto_trace=True):
     cpu_jit()
 
-# GPU compile, execute, benchmark
+# GPU compile, execute, benchmark, profile
 gpu_jit = jax.jit(run_inference(True, 'cpu'))
 gpu_jit().block_until_ready()
 try:
@@ -70,5 +70,3 @@ try:
         gpu_jit()
 except RuntimeError as e:
     print(e)
-
-# Profile the trace, open it here: https://ui.perfetto.dev
