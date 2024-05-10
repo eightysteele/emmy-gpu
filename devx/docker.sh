@@ -6,10 +6,49 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 EMMY_GPU_REPO=$(realpath "$(dirname "$SCRIPT_DIR")")
 TAG=emmy-gpu:dev
 
+host_os() {
+    local os=""
+
+    os="$(uname -s)"
+
+    case "$os" in
+        Linux*)
+            echo :linux
+            return 0
+            ;;
+        Darwin*)
+            echo :macos
+            return 0
+            ;;
+        *)
+            echo :unknown
+            return 1
+            ;;
+    esac
+}
+
+install_gcloud() {
+    local os=""
+
+    echo "CLI: Installing gcloud"
+    if ! os=$(host_os); then
+        echo "unknown host os"
+        exit 1;
+    fi
+    case "$os" in
+        :linux)
+            ./install-gcloud.sh
+            ;;
+        :macos)
+            echo "install gcloud: https://cloud.google.com/sdk/docs/install#mac"
+            ;;
+    esac
+}
+
 check_gcloud() {
     echo "CLI: Checking for gcloud"
    if ! command -v gcloud > /dev/null; then
-       ./install-gcloud.sh
+       install_gcloud
    fi
    account=$(gcloud config list account --format="value(core.account)")
    if [ -z "$account" ]; then
