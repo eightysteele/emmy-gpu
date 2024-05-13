@@ -8,23 +8,19 @@ FROM ghcr.io/nvidia/jax:t5x-2024-05-09 as base
 # https://github.com/NVIDIA/JAX-Toolbox/blob/main/README.md#environment-variables
 
 ################################################################################
-FROM base AS build-hlo
+FROM base AS build-llvm
 ################################################################################
 
-# Builds HLO
-ARG URLREF_HLO=https://github.com/openxla/stablehlo.git#main
-ARG SRC_PATH_HLO=/opt/hlo
-RUN git-clone.sh ${URLREF_HLO} ${SRC_PATH_HLO}
-ADD build-hlo.sh /usr/local/bin/
-RUN build-hlo.sh
+# Builds LLVM/mlir
+ARG SRC_PATH_LLVM=/opt/llvm
+ADD build-mlir.sh /usr/local/bin/
+RUN build-mlir.sh
 
 ################################################################################
-FROM build-hlo AS install-jdk
+FROM build-llvm AS install-jdk
 ################################################################################
 
 # Installs JDK
-ARG SRC_PATH_HLO=/opt/hlo
-COPY --from=build-hlo ${SRC_PATH_HLO} ${SRC_PATH_HLO}
 ADD install-jdk.sh /usr/local/bin
 RUN install-jdk.sh
 
@@ -45,16 +41,16 @@ ADD install-bazelisk.sh /usr/local/bin
 RUN install-bazelisk.sh
 
 ################################################################################
-FROM install-bazelisk AS build-xla-tools
+#FROM install-bazelisk AS build-xla-tools
 ################################################################################
 
 # Builds XLA tooling: https://openxla.org/xla/tools
-ARG SRC_PATH_XLA=/opt/xla
-ADD build-xla-tools.sh /usr/local/bin
-RUN build-xla-tools.sh
+# ARG SRC_PATH_XLA=/opt/xla
+# ADD build-xla-tools.sh /usr/local/bin
+# RUN build-xla-tools.sh
 
 ################################################################################
-FROM build-xla-tools AS install-gcloud
+FROM install-bazelisk AS install-gcloud
 ################################################################################
 
 # Installs gcloud
@@ -72,3 +68,9 @@ ARG GCLOUD_ACCESS_TOKEN
 ADD genjax_demo.py /
 ADD install-genjax.sh /usr/local/bin
 RUN install-genjax.sh
+
+################################################################################
+FROM install-genjax AS final-image
+################################################################################
+
+ENV PATH="/opt/llvm/llvm-project/build/bin:${PATH}"
