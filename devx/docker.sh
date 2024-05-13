@@ -84,6 +84,7 @@ docker_run() {
     echo "CLI: Docker run"
     if ! sudo docker run \
          -v "$EMMY_GPU_REPO":/emmy-gpu \
+         --name "$TAG" \
          --shm-size=2g \
          --privileged \
          --gpus all \
